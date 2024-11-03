@@ -44,6 +44,8 @@ dependencies {
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    //maria
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
 }
 
