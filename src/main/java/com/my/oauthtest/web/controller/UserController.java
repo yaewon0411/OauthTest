@@ -16,7 +16,8 @@ public class UserController {
 
     @GetMapping("/api/users")
     public ResponseEntity<UserInfoRespDto> getUserInfo(HttpServletRequest request){
-        Long userId = (Long) request.getAttribute("userId");
-        return new ResponseEntity<>(userService.getUserInfo(userId), HttpStatus.OK);
+        String provider = request.getAttribute("provider").toString();
+        String providerId = request.getAttribute("providerId").toString();
+        return new ResponseEntity<>(userService.getUserInfo(provider, providerId), HttpStatus.OK);
     }
 }

@@ -1,6 +1,10 @@
 package com.my.oauthtest.config;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.my.oauthtest.config.jwt.JwtProvider;
+import com.my.oauthtest.domain.social.Provider;
+import com.my.oauthtest.domain.social.SocialUser;
+import com.my.oauthtest.domain.social.SocialUserRepository;
 import com.my.oauthtest.domain.user.User;
 import com.my.oauthtest.domain.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +21,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @RequiredArgsConstructor
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
-    private final UserRepository userRepository;
+    private final SocialUserRepository socialUserRepository;
     private final JwtProvider jwtProvider;
     private final String TOKEN_PREFIX = "Bearer ";
     private final String HEADER = "Authorization";
@@ -31,9 +35,21 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             throw new IllegalStateException("유효하지 않은 토큰");
         }
         try{
-            User user = userRepository.findByEmail(jwtProvider.verify(token).getEmail())
-                    .orElseThrow(() -> new IllegalArgumentException("없는 유저임"));
-            request.setAttribute("userId", user.getId());
+            DecodedJWT decodedJWT = jwtProvider.verify(token);
+
+            // 토큰에서 정보 추출
+            Long userId = Long.parseLong(decodedJWT.getSubject());
+            String provider = decodedJWT.getClaim("provider").asString();
+            String providerId = decodedJWT.getClaim("providerId").asString();
+
+            SocialUser socialUserPS = socialUserRepository.findByProviderAndProviderId(Provider.valueOf(provider), providerId)
+                    .orElseThrow(() -> new IllegalStateException("연동되지 않은 소셜 계정임"));
+
+            request.setAttribute("userId", userId);
+            request.setAttribute("provider", provider);
+            request.setAttribute("providerId", providerId);
+            request.setAttribute("socialId", socialUserPS.getId());
+
         }catch(Exception e){
             log.error("토큰 검증 중 오류 발생: {}", e.getMessage(), e);
             throw new IllegalStateException("토큰 오류 발생");

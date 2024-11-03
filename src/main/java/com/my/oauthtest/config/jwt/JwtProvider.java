@@ -7,6 +7,8 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.my.oauthtest.domain.social.Provider;
+import com.my.oauthtest.domain.social.SocialUser;
 import com.my.oauthtest.domain.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,18 +30,20 @@ public class JwtProvider {
     public JwtProvider(@Value("${jwt.secret}") String secretKey) {
         this.secretKey = secretKey;
     }
-    public String create(User user){
+    public String create(SocialUser user){
+        Date now = new Date();
         String jwtToken = JWT.create()
-                .withSubject("Oauth2-test: jwt")
+                .withSubject(user.getUser().getId().toString())
                 .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME))
-                .withClaim("email", user.getEmail())
+                .withIssuedAt(now)
+                .withClaim("providerId", user.getProviderId())    // 소셜 서비스 사용자 식별자 (유니크함)
                 .withClaim("provider", user.getProvider().toString())
                 .sign(Algorithm.HMAC256(secretKey));
 
         return TOKEN_PREFIX + jwtToken;
     }
 
-    public User verify(String token){
+    public DecodedJWT verify(String token){
         DecodedJWT decodedJWT;
         try {
             decodedJWT = JWT.require(Algorithm.HMAC256(secretKey)).build().verify(token);
@@ -57,8 +61,7 @@ public class JwtProvider {
             log.error("JWT 검증 중 오류가 발생했습니다", e);
             throw e;
         }
-        String email = decodedJWT.getClaim("email").asString();
-        return User.builder().email(email).build();
+        return decodedJWT;
     }
 
 }

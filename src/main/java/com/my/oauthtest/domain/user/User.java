@@ -1,12 +1,8 @@
 package com.my.oauthtest.domain.user;
 
-import com.my.oauthtest.domain.user.oauth.Provider;
 import com.my.oauthtest.domain.base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -19,23 +15,14 @@ public class User extends BaseEntity {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String email;
-
-    @Column(nullable = false, length = 127)
-    private String name;
+    private String primaryEmail;
 
     @Column(nullable = false)
-    private String providerId;
-
-    @Enumerated(value = EnumType.STRING)
-    private Provider provider;
+    private String primaryName;
 
     @Builder
-    public User(Long id, String email, String name, String providerId, Provider provider) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-        this.providerId = providerId;
-        this.provider = provider;
+    public User(String primaryEmail, String primaryName) {
+        this.primaryEmail = primaryEmail;
+        this.primaryName = primaryName;
     }
 }

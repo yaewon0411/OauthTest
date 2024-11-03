@@ -2,6 +2,7 @@ package com.my.oauthtest.infra.oauth.client.common;
 
 import com.my.oauthtest.infra.oauth.client.dto.TokenRespDto;
 import com.my.oauthtest.infra.oauth.client.dto.google.GoogleTokenRespDto;
+import com.my.oauthtest.infra.oauth.client.dto.kakao.KakaoTokenRespDto;
 import com.my.oauthtest.infra.oauth.client.google.GoogleApiClient;
 import com.my.oauthtest.infra.oauth.client.google.GoogleAuthClient;
 import com.my.oauthtest.infra.oauth.client.google.GoogleOAuth2Client;
@@ -29,6 +30,9 @@ public class OAuth2ClientFactory {
                 googleApiClient,
                 oAuth2Properties.getProvider("google")
         );
+    }
+    public OAuth2Client<KakaoTokenRespDto> getKakaoClient(){
+        return null;
     }
 
 

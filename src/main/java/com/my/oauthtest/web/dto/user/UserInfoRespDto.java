@@ -1,7 +1,8 @@
 package com.my.oauthtest.web.dto.user;
 
+import com.my.oauthtest.domain.social.SocialUser;
 import com.my.oauthtest.domain.user.User;
-import com.my.oauthtest.domain.user.oauth.Provider;
+import com.my.oauthtest.domain.social.Provider;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +13,7 @@ public class UserInfoRespDto{
     private String email;
     private Provider provider;
 
-    public UserInfoRespDto(User user) {
+    public UserInfoRespDto(SocialUser user) {
         this.name = user.getName();
         this.email = user.getEmail();
         this.provider = user.getProvider();
