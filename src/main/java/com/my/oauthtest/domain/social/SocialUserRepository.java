@@ -1,6 +1,7 @@
 package com.my.oauthtest.domain.social;
 
 import com.my.oauthtest.domain.user.User;
+import org.hibernate.procedure.internal.ProcedureCallImpl;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,5 @@ public interface SocialUserRepository extends JpaRepository<SocialUser, Long> {
 
     boolean existsByProviderAndProviderId(Provider provider, String providerId);
 
+    boolean existsByProviderAndUserId(Provider provider, Long userId);
 }

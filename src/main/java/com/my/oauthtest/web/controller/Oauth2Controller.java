@@ -24,7 +24,7 @@ public class Oauth2Controller {
     @PostMapping("/api/account/link")
     public ResponseEntity<LinkageTokenRespDto> startAccountLinkage(@RequestParam(value = "provider")String provider, HttpServletRequest request){
         Long userId = (Long) request.getAttribute("userId");
-        return new ResponseEntity<>(linkageService.createLinkageToken(userId), HttpStatus.OK);
+        return new ResponseEntity<>(linkageService.createLinkageToken(userId, provider), HttpStatus.OK);
     }
 
 
@@ -42,7 +42,8 @@ public class Oauth2Controller {
     public ResponseEntity<LoginRespDto> callback(@PathVariable(value = "provider")String provider,
                                                  @RequestParam(value = "code")String code,
                                                  @RequestParam(required = false, value = "state")String state){
-        if(state != null){ //계정 연동 모드
+        //state(임시토큰) 값이 있으면 추가 소셜 계정 연동
+        if(state != null){
             return new ResponseEntity<>(oauth2Service.processAccountLinkage(provider, code, state), HttpStatus.OK);
         }
         //일반 로그인 모드

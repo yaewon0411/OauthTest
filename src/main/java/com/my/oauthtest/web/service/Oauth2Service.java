@@ -35,8 +35,6 @@ public class Oauth2Service {
                 .queryParam("response_type", RESPONSE_TYPE)
                 .queryParam("scope", String.join(" ", oAuth2Provider.getScopes()));
 
-        System.out.println("builder.toUriString() = " + builder.toUriString());
-
         if(linkageToken != null){
             builder.queryParam("state", linkageToken);
         }
@@ -51,25 +49,31 @@ public class Oauth2Service {
             TokenRespDto tokenRespDto = client.getAccessToken(code);
             OAuth2UserInfo userInfo = client.getUserInfo(tokenRespDto.getAccessToken());
 
-            return userService.login(userInfo, Provider.valueOf(provider.toUpperCase()));
+            return userService.login(userInfo, Provider.fromString(provider));
         }catch (FeignException e){
-            log.error("OAuth2 프로세스 실패 - provider: {}, error: {}", provider, e.getMessage(), e);
-            throw new IllegalStateException("OAuth2 콜백 실패: "+e.getMessage());
+            log.error("OAuth2 프로세스 실패 - provider: {}, error: {}", provider, e.getMessage());
+            throw new IllegalStateException("OAuth2 콜백 실패: {}"+e.getMessage(), e);
         }
     }
 
     //계정 연동 처리
     public LoginRespDto processAccountLinkage(String provider, String code, String linkageToken){
-        //토큰으로 기존 사용자 확인
-        Long userId = linkageService.getUserIdFromToken(linkageToken);
+        try {
+            //토큰으로 기존 사용자 확인
+            Long userId = linkageService.getUserIdFromToken(linkageToken);
 
-        //outh2 인증 처리
-        OAuth2Client<? extends TokenRespDto> client = oAuth2ClientFactory.getClient(provider);
-        TokenRespDto tokenRespDto = client.getAccessToken(code);
-        OAuth2UserInfo userInfo = client.getUserInfo(tokenRespDto.getAccessToken());
+            //oauth2 인증 처리
+            OAuth2Client<? extends TokenRespDto> client = oAuth2ClientFactory.getClient(provider);
+            TokenRespDto tokenRespDto = client.getAccessToken(code);
+            OAuth2UserInfo userInfo = client.getUserInfo(tokenRespDto.getAccessToken());
 
-        //계정 연동 처리
-        return userService.linkAccount(userId, userInfo, Provider.valueOf(provider.toUpperCase()));
+            //계정 연동 처리
+            return userService.linkAccount(userId, userInfo, Provider.fromString(provider));
+        } catch (FeignException e) {
+            log.error("OAuth2 계정 연동 프로세스 실패 - provider: {}, linkageToken: {}, error: {}",
+                    provider, linkageToken, e.getMessage());
+            throw new IllegalStateException("OAuth2 계정 연동 실패: {}" + e.getMessage(), e);
+        }
     }
 
 }

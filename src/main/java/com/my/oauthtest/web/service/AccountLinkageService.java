@@ -1,5 +1,7 @@
 package com.my.oauthtest.web.service;
 
+import com.my.oauthtest.domain.social.Provider;
+import com.my.oauthtest.domain.social.SocialUserRepository;
 import com.my.oauthtest.web.dto.user.LinkageTokenRespDto;
 import lombok.*;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,13 +15,21 @@ import java.util.concurrent.TimeUnit;
 public class AccountLinkageService {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private static final String TOKEN_PREFIX = "link:";
+    private static final String TEMPORAL_TOKEN_PREFIX = "link:";
     private static final long TOKEN_VALID_TIME = 5; //5분으로 설정
+    private final SocialUserRepository socialUserRepository;
 
-    public LinkageTokenRespDto createLinkageToken(Long userId){
+    public LinkageTokenRespDto createLinkageToken(Long userId, String provider){
+
+        //이미 해당 provider로 연동된 계정이 있는지 확인
+        if(socialUserRepository.existsByProviderAndUserId(Provider.fromString(provider), userId)){
+            throw new IllegalStateException("이미 연동된 소셜 계정임");
+        }
+
         String token = UUID.randomUUID().toString();
-        String redisKey = TOKEN_PREFIX + token;
+        String redisKey = TEMPORAL_TOKEN_PREFIX + token;
 
+        //임시 토큰
         redisTemplate.opsForValue().set(
                 redisKey,
                 userId.toString(),
@@ -31,7 +41,7 @@ public class AccountLinkageService {
     }
 
     public Long getUserIdFromToken(String token){
-        String redisKey = TOKEN_PREFIX + token;
+        String redisKey = TEMPORAL_TOKEN_PREFIX + token;
         String userId = redisTemplate.opsForValue().get(redisKey);
 
         if(userId == null){

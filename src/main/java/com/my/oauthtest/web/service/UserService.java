@@ -32,6 +32,8 @@ public class UserService {
     * */
     public LoginRespDto login(OAuth2UserInfo userInfo, Provider provider){
 
+
+
         //기존에 해당 provider 소셜 계정이 있는지 확인
         Optional<SocialUser> socialUserOP = socialUserRepository.findByProviderAndProviderId(provider, userInfo.getProviderId());
 
@@ -68,7 +70,7 @@ public class UserService {
 
 
     public UserInfoRespDto getUserInfo(String provider, String providerId) {
-        return socialUserRepository.findByProviderAndProviderId(Provider.valueOf(provider), providerId)
+        return socialUserRepository.findByProviderAndProviderId(Provider.fromString(provider), providerId)
                 .map(UserInfoRespDto::new)
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 유저"));
     }

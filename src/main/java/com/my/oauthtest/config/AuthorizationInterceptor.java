@@ -43,7 +43,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             String provider = decodedJWT.getClaim("provider").asString();
             String providerId = decodedJWT.getClaim("providerId").asString();
 
-            SocialUser socialUserPS = socialUserRepository.findByProviderAndProviderId(Provider.valueOf(provider), providerId)
+            SocialUser socialUserPS = socialUserRepository.findByProviderAndProviderId(Provider.fromString(provider), providerId)
                     .orElseThrow(() -> new IllegalStateException("연동되지 않은 소셜 계정임"));
 
             request.setAttribute("userId", userId);
