@@ -22,6 +22,8 @@ public class Oauth2Service {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private static final String RESPONSE_TYPE = "code";
+
     //인증 url 생성
     public String getAuthorizationUrl(String provider, String linkageToken){
         OAuth2Provider oAuth2Provider = oAuth2Properties.getProvider(provider);
@@ -30,8 +32,10 @@ public class Oauth2Service {
                 .fromUriString(oAuth2Provider.getAuthorizationUri())
                 .queryParam("client_id", oAuth2Provider.getClientId())
                 .queryParam("redirect_uri", oAuth2Provider.getRedirectUri())
-                .queryParam("response_type", "code")
+                .queryParam("response_type", RESPONSE_TYPE)
                 .queryParam("scope", String.join(" ", oAuth2Provider.getScopes()));
+
+        System.out.println("builder.toUriString() = " + builder.toUriString());
 
         if(linkageToken != null){
             builder.queryParam("state", linkageToken);

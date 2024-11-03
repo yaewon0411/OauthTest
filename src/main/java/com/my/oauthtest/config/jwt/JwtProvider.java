@@ -23,9 +23,6 @@ public class JwtProvider {
     private final String secretKey;
     private static final Logger log = LoggerFactory.getLogger(JwtProvider.class);
 
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;
-
-    private static final String TOKEN_PREFIX = "Bearer ";
 
     public JwtProvider(@Value("${jwt.secret}") String secretKey) {
         this.secretKey = secretKey;
@@ -34,13 +31,13 @@ public class JwtProvider {
         Date now = new Date();
         String jwtToken = JWT.create()
                 .withSubject(user.getUser().getId().toString())
-                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME))
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtVo.ACCESS_TOKEN_EXPIRE_TIME))
                 .withIssuedAt(now)
                 .withClaim("providerId", user.getProviderId())    // 소셜 서비스 사용자 식별자 (유니크함)
                 .withClaim("provider", user.getProvider().toString())
                 .sign(Algorithm.HMAC256(secretKey));
 
-        return TOKEN_PREFIX + jwtToken;
+        return JwtVo.TOKEN_PREFIX + jwtToken;
     }
 
     public DecodedJWT verify(String token){

@@ -32,6 +32,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = extractToken(request);
         if(token == null){
+            log.info("접근 uri: {}", request.getRequestURI());
             throw new IllegalStateException("유효하지 않은 토큰");
         }
         try{

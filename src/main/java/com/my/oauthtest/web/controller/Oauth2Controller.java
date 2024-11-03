@@ -20,7 +20,7 @@ public class Oauth2Controller {
     private final Oauth2Service oauth2Service;
     private final AccountLinkageService linkageService;
 
-    //계정 연동 시작 -> 임시 토큰 생성
+    //1. 계정 연동 시작 -> 임시 토큰 생성
     @PostMapping("/api/account/link")
     public ResponseEntity<LinkageTokenRespDto> startAccountLinkage(@RequestParam(value = "provider")String provider, HttpServletRequest request){
         Long userId = (Long) request.getAttribute("userId");
@@ -28,6 +28,7 @@ public class Oauth2Controller {
     }
 
 
+    //2. 소셜 로그인 시작
     @GetMapping("/oauth2/authorization/{provider}")
     public void socialLogin(@PathVariable(value = "provider")String provider,
                             @RequestParam(required = false, value = "linkageToken") String linkageToken,
@@ -36,6 +37,7 @@ public class Oauth2Controller {
         response.sendRedirect(authorizationUrl);
     }
 
+    //3. 소셜 로그인 콜백
     @GetMapping("/login/oauth2/code/{provider}")
     public ResponseEntity<LoginRespDto> callback(@PathVariable(value = "provider")String provider,
                                                  @RequestParam(value = "code")String code,

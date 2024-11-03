@@ -6,6 +6,9 @@ import com.my.oauthtest.infra.oauth.client.dto.kakao.KakaoTokenRespDto;
 import com.my.oauthtest.infra.oauth.client.google.GoogleApiClient;
 import com.my.oauthtest.infra.oauth.client.google.GoogleAuthClient;
 import com.my.oauthtest.infra.oauth.client.google.GoogleOAuth2Client;
+import com.my.oauthtest.infra.oauth.client.kakao.KakaoApiClient;
+import com.my.oauthtest.infra.oauth.client.kakao.KakaoAuthClient;
+import com.my.oauthtest.infra.oauth.client.kakao.KakaoOAuth2Client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +18,17 @@ public class OAuth2ClientFactory {
 
     private final GoogleAuthClient googleAuthClient;
     private final GoogleApiClient googleApiClient;
+
+    private final KakaoAuthClient kakaoAuthClient;
+    private final KakaoApiClient kakaoApiClient;
     private final OAuth2Properties oAuth2Properties;
 
     public OAuth2Client<? extends TokenRespDto> getClient(String provider){
         if (provider.equalsIgnoreCase("google")) {
             return getGoogleClient();
+        }
+        else if(provider.equalsIgnoreCase("kakao")){
+            return getKakaoClient();
         }
         throw new IllegalStateException("지원하지 않는 OAuth2 provider 입니다: " + provider);
     }
@@ -32,7 +41,11 @@ public class OAuth2ClientFactory {
         );
     }
     public OAuth2Client<KakaoTokenRespDto> getKakaoClient(){
-        return null;
+        return new KakaoOAuth2Client(
+                kakaoAuthClient,
+                kakaoApiClient,
+                oAuth2Properties.getProvider("kakao")
+        );
     }
 
 
