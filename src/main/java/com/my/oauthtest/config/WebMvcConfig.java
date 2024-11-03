@@ -17,7 +17,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/oauth2/authorization/**",
                         "/login/oauth2/code/**",
-                        "/error"
+                        "/error",
+                        "/favicon.ico"
                 );
     }
 }
