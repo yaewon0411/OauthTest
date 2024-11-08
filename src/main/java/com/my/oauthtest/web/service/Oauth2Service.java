@@ -25,7 +25,7 @@ public class Oauth2Service {
     private static final String RESPONSE_TYPE = "code";
 
     //인증 url 생성
-    public String getAuthorizationUrl(String provider, String linkageToken){
+    public String getAuthorizationUrl(Provider provider, String linkageToken){
         OAuth2Provider oAuth2Provider = oAuth2Properties.getProvider(provider);
 
         UriComponentsBuilder builder = UriComponentsBuilder
@@ -43,13 +43,13 @@ public class Oauth2Service {
     }
 
     //일반 로그인 처리
-    public LoginRespDto processOAuth2Callback(String provider, String code){
+    public LoginRespDto processOAuth2Callback(Provider provider, String code){
         OAuth2Client<? extends TokenRespDto> client = oAuth2ClientFactory.getClient(provider);
         try{
             TokenRespDto tokenRespDto = client.getAccessToken(code);
             OAuth2UserInfo userInfo = client.getUserInfo(tokenRespDto.getAccessToken());
 
-            return userService.login(userInfo, Provider.fromString(provider));
+            return userService.login(userInfo, provider);
         }catch (FeignException e){
             log.error("OAuth2 프로세스 실패 - provider: {}, error: {}", provider, e.getMessage());
             throw new IllegalStateException("OAuth2 콜백 실패: {}"+e.getMessage(), e);
@@ -57,7 +57,7 @@ public class Oauth2Service {
     }
 
     //계정 연동 처리
-    public LoginRespDto processAccountLinkage(String provider, String code, String linkageToken){
+    public LoginRespDto processAccountLinkage(Provider provider, String code, String linkageToken){
         try {
             //토큰으로 기존 사용자 확인
             Long userId = linkageService.getUserIdFromToken(linkageToken);
@@ -68,7 +68,7 @@ public class Oauth2Service {
             OAuth2UserInfo userInfo = client.getUserInfo(tokenRespDto.getAccessToken());
 
             //계정 연동 처리
-            return userService.linkAccount(userId, userInfo, Provider.fromString(provider));
+            return userService.linkAccount(userId, userInfo, provider);
         } catch (FeignException e) {
             log.error("OAuth2 계정 연동 프로세스 실패 - provider: {}, linkageToken: {}, error: {}",
                     provider, linkageToken, e.getMessage());

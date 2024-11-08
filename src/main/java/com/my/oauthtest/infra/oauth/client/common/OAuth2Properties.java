@@ -1,5 +1,6 @@
 package com.my.oauthtest.infra.oauth.client.common;
 
+import com.my.oauthtest.domain.social.Provider;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,7 +15,7 @@ import java.util.Map;
 public class OAuth2Properties {
     private Map<String, OAuth2Provider> providers;
 
-    public OAuth2Provider getProvider(String provider){
-        return providers.get(provider);
+    public OAuth2Provider getProvider(Provider provider){
+        return providers.get(provider.getValue());
     }
 }

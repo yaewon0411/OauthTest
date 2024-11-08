@@ -1,5 +1,6 @@
 package com.my.oauthtest.web.controller;
 
+import com.my.oauthtest.domain.social.Provider;
 import com.my.oauthtest.web.dto.user.LinkageTokenRespDto;
 import com.my.oauthtest.web.dto.user.LoginRespDto;
 import com.my.oauthtest.web.service.AccountLinkageService;
@@ -30,7 +31,7 @@ public class Oauth2Controller {
 
     //2. 소셜 로그인 시작
     @GetMapping("/oauth2/authorization/{provider}")
-    public void socialLogin(@PathVariable(value = "provider")String provider,
+    public void socialLogin(@PathVariable(value = "provider") Provider provider,
                             @RequestParam(required = false, value = "linkageToken") String linkageToken,
                             HttpServletResponse response) throws IOException {
         String authorizationUrl = oauth2Service.getAuthorizationUrl(provider, linkageToken);
@@ -39,7 +40,7 @@ public class Oauth2Controller {
 
     //3. 소셜 로그인 콜백
     @GetMapping("/login/oauth2/code/{provider}")
-    public ResponseEntity<LoginRespDto> callback(@PathVariable(value = "provider")String provider,
+    public ResponseEntity<LoginRespDto> callback(@PathVariable(value = "provider")Provider provider,
                                                  @RequestParam(value = "code")String code,
                                                  @RequestParam(required = false, value = "state")String state){
         //state(임시토큰) 값이 있으면 추가 소셜 계정 연동
