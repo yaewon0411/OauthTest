@@ -1,6 +1,7 @@
 package com.my.oauthtest.infra.oauth.client.common;
 
 import com.my.oauthtest.domain.social.Provider;
+import com.my.oauthtest.infra.oauth.client.common.provider.OAuth2Provider;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;

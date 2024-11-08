@@ -1,4 +1,4 @@
-package com.my.oauthtest.infra.oauth.client.common;
+package com.my.oauthtest.infra.oauth.client.common.provider;
 
 import lombok.Getter;
 import lombok.Setter;

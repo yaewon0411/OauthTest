@@ -2,7 +2,7 @@ package com.my.oauthtest.infra.oauth.client.kakao;
 
 import com.my.oauthtest.config.jwt.JwtVo;
 import com.my.oauthtest.infra.oauth.client.common.OAuth2Client;
-import com.my.oauthtest.infra.oauth.client.common.OAuth2Provider;
+import com.my.oauthtest.infra.oauth.client.common.provider.OAuth2Provider;
 import com.my.oauthtest.infra.oauth.client.common.OAuth2UserInfo;
 import com.my.oauthtest.infra.oauth.client.dto.kakao.KakaoTokenRespDto;
 import lombok.RequiredArgsConstructor;

@@ -3,6 +3,7 @@ package com.my.oauthtest.infra.oauth.client.google;
 import com.my.oauthtest.config.oauth.OAuth2FeignConfig;
 import com.my.oauthtest.infra.oauth.client.dto.google.GoogleUserInfo;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 

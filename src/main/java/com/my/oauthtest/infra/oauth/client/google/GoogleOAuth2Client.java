@@ -3,7 +3,7 @@ package com.my.oauthtest.infra.oauth.client.google;
 import com.my.oauthtest.config.jwt.JwtVo;
 import com.my.oauthtest.infra.oauth.client.dto.google.GoogleTokenRespDto;
 import com.my.oauthtest.infra.oauth.client.common.OAuth2Client;
-import com.my.oauthtest.infra.oauth.client.common.OAuth2Provider;
+import com.my.oauthtest.infra.oauth.client.common.provider.OAuth2Provider;
 import com.my.oauthtest.infra.oauth.client.common.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

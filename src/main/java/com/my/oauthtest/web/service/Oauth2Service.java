@@ -1,6 +1,7 @@
 package com.my.oauthtest.web.service;
 
 import com.my.oauthtest.domain.social.Provider;
+import com.my.oauthtest.infra.oauth.client.common.provider.OAuth2Provider;
 import com.my.oauthtest.infra.oauth.client.dto.TokenRespDto;
 import com.my.oauthtest.infra.oauth.client.common.*;
 import com.my.oauthtest.web.dto.user.LoginRespDto;

@@ -14,6 +14,7 @@ public enum Provider {
         this.value = value;
     }
 
+
     public static Provider fromString(String str) {
         return Arrays.stream(Provider.values())
                 .filter(provider -> provider.getValue().equals(str.toLowerCase()))
