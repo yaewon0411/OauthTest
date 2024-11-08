@@ -7,14 +7,18 @@ import java.util.Arrays;
 @Getter
 public enum Provider {
 
-    GOOGLE, KAKAO;
+    GOOGLE("google"), KAKAO("kakao");
+    private final String value;
+
+    Provider(String value) {
+        this.value = value;
+    }
 
     public static Provider fromString(String str) {
-        try {
-            return Provider.valueOf(str.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("존재하지 않는 provider: " + str);
-        }
+        return Arrays.stream(Provider.values())
+                .filter(provider -> provider.getValue().equals(str.toLowerCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 provider: "+str));
     }
 
 }
