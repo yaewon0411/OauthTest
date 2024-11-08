@@ -2,12 +2,14 @@
 - Feign을 사용해 각 provider API를 호출
 ### 전체 흐름:
 1. **최초 소셜 로그인 (ex; 구글로 첫 로그인)**
+   
    (1) 클라이언트가 구글 로그인 클릭 <br>
    (2) 구글 로그인 페이지로 리다이렉트<br>
    (3) 구글 인증 완료 -> 백엔드로 인증 코드 전달<br>
    (4) 새로운 User와 SocialUser(google) 생성<br>
    (5) 로그인 완료<br>
 2. **두 번째 소셜 계정 연동 (ex; 카카오)**
+   
    (1) 사용자가 소셜 계정 추가 연동 클릭 -> 카카오 계정 선택<br>
    (2) 임시 토큰 생성하여 Redis에 저장 -> ex; {key: "link:user123123", value: "userId:1", TTL:5}<br>
    (3) 카카오 로그인 페이지로 리다이렉트 (임시 토큰을 state 파라미터로 전달)<br>
@@ -95,26 +97,27 @@ public void socialLogin(@PathVariable(value = "provider") String provider, // ka
 
 - userService의 login 메서드 -> optional을 쓰고 있으므로 좀 더 functional스럽게 사용하는 것을 권장
 ```java
-    public LoginRespDto login(OAuth2UserInfo userInfo, Provider provider){
-         return socialUserRepository.findByProviderAndProviderId(provider, userInfo.getProviderId())
-             .map(this::createLoginResp)
-             .orElseGet(() -> {
-                 User user = User.builder()
-                     .primaryEmail(userInfo.getEmail())
-                     .primaryName(userInfo.getName())
-                     .build();
-                 userRepository.save(user);
-                 SocialUser socialUser = SocialUser.builder()
-                     .user(user)
-                     .provider(provider)
-                     .providerId(userInfo.getProviderId())
-                     .email(userInfo.getEmail())
-                     .name(userInfo.getName())
-                     .build();
-                 socialUserRepository.save(socialUser);
+    public LoginRespDto login(OAuth2UserInfo userInfo, Provider provider) {
+    return socialUserRepository.findByProviderAndProviderId(provider, userInfo.getProviderId())
+            .map(this::createLoginResp)
+            .orElseGet(() -> {
+                User user = User.builder()
+                        .primaryEmail(userInfo.getEmail())
+                        .primaryName(userInfo.getName())
+                        .build();
+                userRepository.save(user);
+                SocialUser socialUser = SocialUser.builder()
+                        .user(user)
+                        .provider(provider)
+                        .providerId(userInfo.getProviderId())
+                        .email(userInfo.getEmail())
+                        .name(userInfo.getName())
+                        .build();
+                socialUserRepository.save(socialUser);
 
-                 return createLoginResp(socialUser);
-             });
+                return createLoginResp(socialUser);
+            });
+}
 ```
 - OAuth2ClientFactory 에서 OAuth2Client를 불러오고 있는 방식
   - OAuth2Client를 빈으로 등록해서 Factory에서 아래와 같은 방식으로 사용하면 좀 더 추상화 가능
@@ -132,6 +135,7 @@ public void socialLogin(@PathVariable(value = "provider") String provider, // ka
             case GOOGLE -> getGoogleClient();
             default -> throw new IllegalStateException("지원하지 않는 OAuth2 provider 입니다: " + provider);
         };
+  }
    ```
   - 매번 각 provider 별 객체를 생성하고 있다 -> 빈으로 관리 권장
   ```java
@@ -144,3 +148,4 @@ public void socialLogin(@PathVariable(value = "provider") String provider, // ka
         );
     }
    ```
+
