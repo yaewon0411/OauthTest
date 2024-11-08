@@ -149,3 +149,6 @@ public void socialLogin(@PathVariable(value = "provider") String provider, // ka
     }
    ```
 
+## 리뷰 반영
+<img width="590" alt="image" src="https://github.com/user-attachments/assets/9443bfbb-7635-4ea3-b2e3-9e739ad85724">
+
