@@ -30,33 +30,27 @@ public class UserService {
     * 2) 유저 정보가 있지만, 해당 provider 연동은 안되어있는 경우 -> user 가져온 후 해당 user의 socialUser 생성
     *
     * */
-    public LoginRespDto login(OAuth2UserInfo userInfo, Provider provider){
+    public LoginRespDto login(OAuth2UserInfo userInfo, Provider provider) {
+        return socialUserRepository.findByProviderAndProviderId(provider, userInfo.getProviderId())
+                .map(this::createLoginResp)
+                .orElseGet(() -> {
+                    //없다면 -> 새 계정 생성
+                    User user = User.builder()
+                            .primaryEmail(userInfo.getEmail())
+                            .primaryName(userInfo.getName())
+                            .build();
+                    userRepository.save(user);
+                    SocialUser socialUser = SocialUser.builder()
+                            .user(user)
+                            .provider(provider)
+                            .providerId(userInfo.getProviderId())
+                            .email(userInfo.getEmail())
+                            .name(userInfo.getName())
+                            .build();
+                    socialUserRepository.save(socialUser);
 
-
-
-        //기존에 해당 provider 소셜 계정이 있는지 확인
-        Optional<SocialUser> socialUserOP = socialUserRepository.findByProviderAndProviderId(provider, userInfo.getProviderId());
-
-        //있다면
-        if(socialUserOP.isPresent()){
-            return createLoginResp(socialUserOP.get());
-        }
-        //없다면 -> 새 계정 생성
-        User user = User.builder()
-                .primaryEmail(userInfo.getEmail())
-                .primaryName(userInfo.getName())
-                .build();
-        userRepository.save(user);
-        SocialUser socialUser = SocialUser.builder()
-                .user(user)
-                .provider(provider)
-                .providerId(userInfo.getProviderId())
-                .email(userInfo.getEmail())
-                .name(userInfo.getName())
-                .build();
-        socialUserRepository.save(socialUser);
-
-        return createLoginResp(socialUser);
+                    return createLoginResp(socialUser);
+                });
     }
 
     private LoginRespDto createLoginResp(SocialUser socialUserPS){
